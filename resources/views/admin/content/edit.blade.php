@@ -33,11 +33,11 @@
         <h2 class="text-xl font-semibold mb-2">トップ</h2>
         <div>
             <label class="block text-sm mb-1">見出し</label>
-            <input type="text" name="contents[home.hero_title]" value="{{ old('contents.home.hero_title', $contents['home.hero_title']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[home][hero_title]" value="{{ old('contents.home.hero_title', $contents['home.hero_title']) }}" class="w-full border rounded p-2">
         </div>
         <div>
             <label class="block text-sm mb-1">本文</label>
-            <textarea name="contents[home.hero_text]" rows="3" class="w-full border rounded p-2">{{ old('contents.home.hero_text', $contents['home.hero_text']) }}</textarea>
+            <textarea name="contents[home][hero_text]" rows="3" class="w-full border rounded p-2">{{ old('contents.home.hero_text', $contents['home.hero_text']) }}</textarea>
         </div>
         <div>
             <label class="block text-sm mb-1">背景画像</label>
@@ -45,7 +45,7 @@
                 <img src="{{ $contents['home.hero_image'] }}" alt="現在の画像" class="w-32 h-20 object-cover rounded">
                 <span class="text-sm text-gray-600">変更する場合はファイルを選択してください</span>
             </div>
-            <input type="file" name="images[home.hero_image]" accept="image/*">
+            <input type="file" name="images[home][hero_image]" accept="image/*">
         </div>
     </section>
 
@@ -53,11 +53,11 @@
         <h2 class="text-xl font-semibold mb-2">メニュー</h2>
         <div>
             <label class="block text-sm mb-1">見出し</label>
-            <input type="text" name="contents[menu.heading]" value="{{ old('contents.menu.heading', $contents['menu.heading']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[menu][heading]" value="{{ old('contents.menu.heading', $contents['menu.heading']) }}" class="w-full border rounded p-2">
         </div>
         <div>
             <label class="block text-sm mb-1">メニュー一覧（1行につき1品）</label>
-            <textarea name="contents[menu.items]" rows="4" class="w-full border rounded p-2">{{ old('contents.menu.items', $contents['menu.items']) }}</textarea>
+            <textarea name="contents[menu][items]" rows="4" class="w-full border rounded p-2">{{ old('contents.menu.items', $contents['menu.items']) }}</textarea>
         </div>
     </section>
 
@@ -65,19 +65,19 @@
         <h2 class="text-xl font-semibold mb-2">アクセス</h2>
         <div>
             <label class="block text-sm mb-1">見出し</label>
-            <input type="text" name="contents[access.heading]" value="{{ old('contents.access.heading', $contents['access.heading']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[access][heading]" value="{{ old('contents.access.heading', $contents['access.heading']) }}" class="w-full border rounded p-2">
         </div>
         <div>
             <label class="block text-sm mb-1">住所</label>
-            <input type="text" name="contents[access.address]" value="{{ old('contents.access.address', $contents['access.address']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[access][address]" value="{{ old('contents.access.address', $contents['access.address']) }}" class="w-full border rounded p-2">
         </div>
         <div>
             <label class="block text-sm mb-1">営業時間</label>
-            <input type="text" name="contents[access.hours]" value="{{ old('contents.access.hours', $contents['access.hours']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[access][hours]" value="{{ old('contents.access.hours', $contents['access.hours']) }}" class="w-full border rounded p-2">
         </div>
         <div>
             <label class="block text-sm mb-1">地図埋め込みURL</label>
-            <input type="text" name="contents[access.map_embed]" value="{{ old('contents.access.map_embed', $contents['access.map_embed']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[access][map_embed]" value="{{ old('contents.access.map_embed', $contents['access.map_embed']) }}" class="w-full border rounded p-2">
             <p class="text-xs text-gray-500 mt-1">Googleマップの共有 > 地図を埋め込む で取得できるURLを貼り付けてください。</p>
         </div>
     </section>
@@ -86,11 +86,11 @@
         <h2 class="text-xl font-semibold mb-2">お問い合わせ</h2>
         <div>
             <label class="block text-sm mb-1">見出し</label>
-            <input type="text" name="contents[contact.heading]" value="{{ old('contents.contact.heading', $contents['contact.heading']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[contact][heading]" value="{{ old('contents.contact.heading', $contents['contact.heading']) }}" class="w-full border rounded p-2">
         </div>
         <div>
             <label class="block text-sm mb-1">本文</label>
-            <textarea name="contents[contact.body]" rows="3" class="w-full border rounded p-2">{{ old('contents.contact.body', $contents['contact.body']) }}</textarea>
+            <textarea name="contents[contact][body]" rows="3" class="w-full border rounded p-2">{{ old('contents.contact.body', $contents['contact.body']) }}</textarea>
         </div>
     </section>
 
@@ -98,7 +98,7 @@
         <h2 class="text-xl font-semibold mb-2">ギャラリー</h2>
         <div>
             <label class="block text-sm mb-1">見出し</label>
-            <input type="text" name="contents[gallery.heading]" value="{{ old('contents.gallery.heading', $contents['gallery.heading']) }}" class="w-full border rounded p-2">
+            <input type="text" name="contents[gallery][heading]" value="{{ old('contents.gallery.heading', $contents['gallery.heading']) }}" class="w-full border rounded p-2">
         </div>
         <div class="grid md:grid-cols-3 gap-4">
             @foreach ($galleryImages as $index => $image)
