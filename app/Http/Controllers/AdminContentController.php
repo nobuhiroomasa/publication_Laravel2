@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Content;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
@@ -78,7 +79,7 @@ class AdminContentController extends Controller
             'gallery_images.*' => 'ギャラリー画像',
         ]);
 
-        $contents = $request->input('contents', []);
+        $contents = Arr::dot($request->input('contents', []));
 
         foreach ($contents as $key => $value) {
             Content::updateValue($key, $value);
