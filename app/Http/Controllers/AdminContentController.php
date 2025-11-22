@@ -7,7 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 
 class AdminContentController extends Controller
 {
@@ -35,7 +34,10 @@ class AdminContentController extends Controller
     public function edit()
     {
         $contents = Content::valuesFor($this->defaults);
-        $galleryImages = json_decode($contents['gallery.images'], true) ?? [];
+        $contents['home.hero_image'] = $this->normalizeStorageUrl($contents['home.hero_image']);
+        $galleryImages = collect(json_decode($contents['gallery.images'], true) ?? [])
+            ->map(fn ($image) => $this->normalizeStorageUrl($image))
+            ->all();
 
         return view('admin.content.edit', [
             'contents' => $contents,
@@ -87,19 +89,41 @@ class AdminContentController extends Controller
 
         if ($request->hasFile('images.home.hero_image')) {
             $path = $request->file('images.home.hero_image')->store('uploads', 'public');
-            Content::updateValue('home.hero_image', Storage::url($path));
+            Content::updateValue('home.hero_image', $this->publicStorageUrl($path));
         }
 
         $galleryImages = $request->input('existing_gallery_images', []);
         foreach ($request->file('gallery_images', []) as $file) {
             if ($file) {
                 $path = $file->store('uploads', 'public');
-                $galleryImages[] = Storage::url($path);
+                $galleryImages[] = $this->publicStorageUrl($path);
             }
         }
 
         Content::updateValue('gallery.images', json_encode(array_values($galleryImages)));
 
         return Redirect::route('admin.contents.edit')->with('status', 'コンテンツを更新しました。');
+    }
+
+    private function publicStorageUrl(string $path): string
+    {
+        return '/storage/' . ltrim($path, '/');
+    }
+
+    private function normalizeStorageUrl(string $url): string
+    {
+        $storagePrefix = '/storage/';
+
+        if (str_starts_with($url, $storagePrefix)) {
+            return $url;
+        }
+
+        $appUrlPrefix = rtrim(config('app.url'), '/') . $storagePrefix;
+
+        if (str_starts_with($url, $appUrlPrefix)) {
+            return $storagePrefix . ltrim(substr($url, strlen($appUrlPrefix)), '/');
+        }
+
+        return $url;
     }
 }
