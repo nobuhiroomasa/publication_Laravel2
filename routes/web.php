@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminContentController;
 use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,6 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/reservations', [ReservationController::class, 'adminIndex'])->name('reservations.index');
     Route::get('/reservations/{reservation}', [ReservationController::class, 'adminShow'])->name('reservations.show');
     Route::patch('/reservations/{reservation}', [ReservationController::class, 'updateStatus'])->name('reservations.update');
+    Route::get('/contents', [AdminContentController::class, 'edit'])->name('contents.edit');
+    Route::post('/contents', [AdminContentController::class, 'update'])->name('contents.update');
 });
