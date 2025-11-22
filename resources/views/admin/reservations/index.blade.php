@@ -3,10 +3,13 @@
 @section('content')
 <div class="flex justify-between items-center mb-4">
     <h1 class="text-2xl font-semibold">予約一覧</h1>
-    <form method="POST" action="{{ route('admin.logout') }}">
-        @csrf
-        <button type="submit" class="text-sm underline">ログアウト</button>
-    </form>
+    <div class="flex items-center space-x-4 text-sm">
+        <a href="{{ route('admin.contents.edit') }}" class="underline">コンテンツ管理</a>
+        <form method="POST" action="{{ route('admin.logout') }}">
+            @csrf
+            <button type="submit" class="underline">ログアウト</button>
+        </form>
+    </div>
 </div>
 <div class="bg-white shadow rounded">
     <table class="w-full text-left">
