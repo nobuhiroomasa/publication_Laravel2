@@ -11,10 +11,22 @@ use Illuminate\Support\Str;
 
 class ReservationController extends Controller
 {
-    public function showPublicPage(string $page = 'home')
+    public function showPublicPage()
     {
-        $view = in_array($page, ['home','menu','access','contact','reserve','gallery']) ? $page : 'home';
-        return view('pages.'.$view);
+        $routeName = request()->route()?->getName();
+
+        $pages = [
+            'home' => 'home',
+            'menu' => 'menu',
+            'access' => 'access',
+            'contact' => 'contact',
+            'reserve' => 'reserve',
+            'gallery' => 'gallery',
+        ];
+
+        $view = $pages[$routeName] ?? 'home';
+
+        return view('pages.' . $view);
     }
 
     public function store(Request $request)
