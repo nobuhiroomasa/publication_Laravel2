@@ -118,8 +118,8 @@
         </div>
     </section>
 
-    <div class="text-right">
-        <button type="submit" class="px-5 py-2 bg-brown-700 text-white rounded">保存する</button>
+    <div class="flex justify-end pt-6 border-t">
+        <button type="submit" class="px-5 py-2 bg-brown-700 text-white rounded">更新する</button>
     </div>
 </form>
 @endsection
