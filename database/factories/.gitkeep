@@ -1,0 +1,1 @@
+# Keep the factories directory tracked so Composer's classmap autoloading succeeds even when no factories are defined yet.
