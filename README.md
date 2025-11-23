@@ -7,6 +7,22 @@
 - Composer
 - SQLite (デフォルト) / MySQL (本番想定)
 
+## ディレクトリ構成（共有サーバー向け）
+`public_html/20250714...onamaeweb.jp/` を DocumentRoot とした状態で、アプリ本体を同階層の `laravel/` 以下にまとめています。
+
+```
+public_html/20250714...onamaeweb.jp/
+├── index.php        # DocumentRoot 用のフロントコントローラ（LARAVEL_BASE_PATH 未設定なら ./laravel を参照）
+├── .htaccess        # Laravel のリライト設定
+├── css/             # 公開静的ファイル（必要に応じて配置）
+├── js/
+├── images/
+├── storage -> laravel/storage/app/public  # public/storage へのシンボリックリンク想定
+└── laravel/        # アプリ本体（composer.json, artisan, app/ などすべてここに集約）
+```
+
+`composer install` や `php artisan` は、**必ず `public_html/20250714...onamaeweb.jp/laravel/` をカレントディレクトリにして実行**してください。
+
 ### PHP / Composer のインストール例（macOS/Homebrew）
 `php` コマンドが見つからない場合は、以下のように Homebrew で PHP と Composer を入れてください。
 
@@ -86,6 +102,12 @@ xcode-select -p
   Visual Studio Code とは無関係で、VS Code を使っていても CLI 開発ツールは別途インストール・更新する必要があります。
 
 ## セットアップ
+以下は `public_html/20250714...onamaeweb.jp/laravel/` に移動した状態で実行することを想定しています。
+
+```bash
+cd public_html/20250714...onamaeweb.jp/laravel/
+```
+
 1. `.env` を作成
 ```bash
 cp .env.example .env
@@ -95,7 +117,7 @@ cp .env.example .env
 composer install
 ```
    - `database/factories` は Composer のクラスマップ対象なので、空でも削除しないでください。
-   - `vendor/autoload.php` が見つからないエラーが出る場合は、**必ずこのリポジトリのルート（`composer.json` と同じ場所）で**
+   - `vendor/autoload.php` が見つからないエラーが出る場合は、**必ず `public_html/20250714...onamaeweb.jp/laravel/`（`composer.json` と同じ場所）で**
      `composer install` を実行してください。以前のインストールに失敗していた場合は、`rm -rf vendor composer.lock` で削除してから
      再実行するとクリーンな状態になります。
 3. アプリキー生成
@@ -117,33 +139,24 @@ php artisan serve
 ```
 
 ## お名前.com 共用サーバーへの配置
-- `public` を DocumentRoot にリンクできない場合、`public` ディレクトリの内容を公開ディレクトリにコピーし、`index.php` 内の `require` パスを実際のアプリパスに合わせて編集してください。`LARAVEL_BASE_PATH` 環境変数を使えば、`index.php` を直接書き換えずに絶対パスを指定できます（例: `.htaccess` に `SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app`）。
-- または、公開ディレクトリに `public` へのシンボリックリンクを張り、`.htaccess` のリライトが有効になっていることを確認します。
-- `storage` ディレクトリには書き込み権限を付与してください。
-- **`public/` 単体では動作しません。** `app/` や `bootstrap/`、`config/`、`vendor/` などのアプリ本体は公開領域の外に置き、`index.php` から参照できるパスに配置してください。`composer install` 後の `vendor` ディレクトリも必須です。
+- このリポジトリは、DocumentRoot を `public_html/20250714...onamaeweb.jp/` とした場合にそのまま動かせる配置例になっています。`index.php` と `.htaccess` は DocumentRoot 直下、アプリ本体は同階層の `laravel/` 以下にまとめてください。
+- アプリ本体を別パスに移したい場合は、DocumentRoot 側の `index.php` で `LARAVEL_BASE_PATH` 環境変数を指定するか、パスを書き換えてください（例: `.htaccess` に `SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app`）。
+- `storage` ディレクトリ（`laravel/storage` および DocumentRoot 直下の `storage` シンボリックリンク先）には書き込み権限を付与してください。
+- **`index.php` だけを置いても動作しません。** `app/` や `bootstrap/`、`config/`、`vendor/` などのアプリ本体は `laravel/` 側にそろえ、`composer install` 後の `vendor` ディレクトリも必須です。
 
 ### 403 Forbidden になる場合の具体例（ファイルマネージャーのみ利用する場合）
-お名前.com 共用サーバーの DocumentRoot（例: `/public_html/xxxxx/`）直下には `index.php` が存在しないため、そのまま一式を置くと 403 になります。以下の手順で配置してください。
+お名前.com 共用サーバーの DocumentRoot（例: `/public_html/xxxxx/`）直下に `index.php` が無いと 403 になります。最低限、以下をそろえてください。
 
-1. **アプリ本体（`app/` や `vendor/` など）を DocumentRoot の外に置く**
-   - 例: `/home/ユーザー名/laravel-app/` にリポジトリを展開し、ここで `composer install` を実行して `vendor` を生成する。
-2. **DocumentRoot には `public/` の中身だけを置く**
-   - 例: `/public_html/xxxxx/` に `public` 配下のファイルだけをコピーする（`public` フォルダごとではなく中身）。
-3. **DocumentRoot 側の `index.php` のパスを書き換える**
-   - `LARAVEL_BASE_PATH` 環境変数を使うと、`index.php` の中身を直接書き換えなくても絶対パスを渡せます。
-   - 例 (`.htaccess` に追加):
-     ```apacheconf
-     SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app
-     ```
-   - 直書きする場合の例:
-     ```php
-     require '/home/ユーザー名/laravel-app/vendor/autoload.php';
-     $app = require_once '/home/ユーザー名/laravel-app/bootstrap/app.php';
-     ```
+1. **DocumentRoot 直下にフロントコントローラを置く**
+   - このリポジトリでは `public_html/20250714...onamaeweb.jp/index.php` と `.htaccess` が DocumentRoot 用です。別ドメイン名でも中身は同じなので、配置先フォルダ名だけ合わせれば動きます。
+2. **アプリ本体（`app/` や `vendor/` など）を `laravel/` にまとめる**
+   - DocumentRoot と同階層、またはさらに外側に `laravel/` ディレクトリを用意し、ここで `composer install` を実行して `vendor` を生成します。
+3. **DocumentRoot 側の `index.php` からアプリに到達できるようパスを合わせる**
+   - `LARAVEL_BASE_PATH` 環境変数を使うと、`index.php` を直接編集せずに絶対パスを渡せます（例: `.htaccess` に `SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app`）。
 4. **権限を確認する**
    - ディレクトリは 755、ファイルは 644 を目安に設定する。
    - `storage` と `bootstrap/cache` は書き込み可能にする（例: 775）。
 5. **`.htaccess` が DocumentRoot に置かれているか確認する**
-   - `public` からコピーした `.htaccess` が無いと Laravel ルーティングが動きません。
+   - `.htaccess` が無いと Laravel ルーティングが動きません。
 
-この構成にすると、DocumentRoot 直下に `index.php` と `.htaccess` があり、アプリ本体は公開領域の外にあるため、403 や不正な公開を避けられます。
+この構成にすると、DocumentRoot 直下に `index.php` と `.htaccess` があり、アプリ本体は公開領域の外に置きつつ正しく参照されるため、403 や不正な公開を避けられます。
