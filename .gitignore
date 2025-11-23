@@ -10,3 +10,14 @@
 /storage/logs/*.log
 /.idea
 /.vscode
+
+# Deployed structure under public_html
+/public_html/20250714...onamaeweb.jp/laravel/vendor
+/public_html/20250714...onamaeweb.jp/laravel/node_modules
+/public_html/20250714...onamaeweb.jp/laravel/storage/*.key
+/public_html/20250714...onamaeweb.jp/laravel/.env
+/public_html/20250714...onamaeweb.jp/laravel/.phpunit.result.cache
+/public_html/20250714...onamaeweb.jp/laravel/storage/framework/cache/data/*
+/public_html/20250714...onamaeweb.jp/laravel/storage/framework/sessions/*
+/public_html/20250714...onamaeweb.jp/laravel/storage/framework/views/*
+/public_html/20250714...onamaeweb.jp/laravel/storage/logs/*.log

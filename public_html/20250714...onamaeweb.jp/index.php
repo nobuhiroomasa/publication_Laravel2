@@ -5,10 +5,11 @@ use Illuminate\Foundation\Application;
 
 define('LARAVEL_START', microtime(true));
 
-// Allows hosting environments where the DocumentRoot cannot point to `public/`.
+// Allows hosting environments where the DocumentRoot cannot point to the Laravel base path.
 // Set the absolute project root via the LARAVEL_BASE_PATH environment variable
 // (e.g. `.htaccess` の `SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app`).
-$basePath = getenv('LARAVEL_BASE_PATH') ?: __DIR__.'/..';
+// When unset, the application is expected to live under `./laravel` from this front controller.
+$basePath = getenv('LARAVEL_BASE_PATH') ?: __DIR__.'/laravel';
 $basePath = rtrim($basePath, '/');
 
 require $basePath.'/vendor/autoload.php';
