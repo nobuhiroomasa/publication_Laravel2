@@ -5,9 +5,15 @@ use Illuminate\Foundation\Application;
 
 define('LARAVEL_START', microtime(true));
 
-require __DIR__.'/../vendor/autoload.php';
+// Allows hosting environments where the DocumentRoot cannot point to `public/`.
+// Set the absolute project root via the LARAVEL_BASE_PATH environment variable
+// (e.g. `.htaccess` の `SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app`).
+$basePath = getenv('LARAVEL_BASE_PATH') ?: __DIR__.'/..';
+$basePath = rtrim($basePath, '/');
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+require $basePath.'/vendor/autoload.php';
+
+$app = require_once $basePath.'/bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);
 

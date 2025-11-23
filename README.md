@@ -117,6 +117,33 @@ php artisan serve
 ```
 
 ## お名前.com 共用サーバーへの配置
-- `public` を DocumentRoot にリンクできない場合、`public` ディレクトリの内容を公開ディレクトリにコピーし、`index.php` 内の `require` パスを実際のアプリパスに合わせて編集してください。
+- `public` を DocumentRoot にリンクできない場合、`public` ディレクトリの内容を公開ディレクトリにコピーし、`index.php` 内の `require` パスを実際のアプリパスに合わせて編集してください。`LARAVEL_BASE_PATH` 環境変数を使えば、`index.php` を直接書き換えずに絶対パスを指定できます（例: `.htaccess` に `SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app`）。
 - または、公開ディレクトリに `public` へのシンボリックリンクを張り、`.htaccess` のリライトが有効になっていることを確認します。
 - `storage` ディレクトリには書き込み権限を付与してください。
+- **`public/` 単体では動作しません。** `app/` や `bootstrap/`、`config/`、`vendor/` などのアプリ本体は公開領域の外に置き、`index.php` から参照できるパスに配置してください。`composer install` 後の `vendor` ディレクトリも必須です。
+
+### 403 Forbidden になる場合の具体例（ファイルマネージャーのみ利用する場合）
+お名前.com 共用サーバーの DocumentRoot（例: `/public_html/xxxxx/`）直下には `index.php` が存在しないため、そのまま一式を置くと 403 になります。以下の手順で配置してください。
+
+1. **アプリ本体（`app/` や `vendor/` など）を DocumentRoot の外に置く**
+   - 例: `/home/ユーザー名/laravel-app/` にリポジトリを展開し、ここで `composer install` を実行して `vendor` を生成する。
+2. **DocumentRoot には `public/` の中身だけを置く**
+   - 例: `/public_html/xxxxx/` に `public` 配下のファイルだけをコピーする（`public` フォルダごとではなく中身）。
+3. **DocumentRoot 側の `index.php` のパスを書き換える**
+   - `LARAVEL_BASE_PATH` 環境変数を使うと、`index.php` の中身を直接書き換えなくても絶対パスを渡せます。
+   - 例 (`.htaccess` に追加):
+     ```apacheconf
+     SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app
+     ```
+   - 直書きする場合の例:
+     ```php
+     require '/home/ユーザー名/laravel-app/vendor/autoload.php';
+     $app = require_once '/home/ユーザー名/laravel-app/bootstrap/app.php';
+     ```
+4. **権限を確認する**
+   - ディレクトリは 755、ファイルは 644 を目安に設定する。
+   - `storage` と `bootstrap/cache` は書き込み可能にする（例: 775）。
+5. **`.htaccess` が DocumentRoot に置かれているか確認する**
+   - `public` からコピーした `.htaccess` が無いと Laravel ルーティングが動きません。
+
+この構成にすると、DocumentRoot 直下に `index.php` と `.htaccess` があり、アプリ本体は公開領域の外にあるため、403 や不正な公開を避けられます。
