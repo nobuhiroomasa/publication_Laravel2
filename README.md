@@ -8,20 +8,20 @@
 - SQLite (デフォルト) / MySQL (本番想定)
 
 ## ディレクトリ構成（共有サーバー向け）
-`public_html/20250714...onamaeweb.jp/` を DocumentRoot とした状態で、アプリ本体を同階層の `laravel/` 以下にまとめています。
+プロジェクトのルートをそのまま DocumentRoot に配置し、アプリ本体を `laravel/` 以下にまとめています。`index.php` は
+`./laravel` を基準パスとして読み込みます（必要に応じて `LARAVEL_BASE_PATH` で絶対パス指定も可能）。
 
 ```
-public_html/20250714...onamaeweb.jp/
+./
 ├── index.php        # DocumentRoot 用のフロントコントローラ（LARAVEL_BASE_PATH 未設定なら ./laravel を参照）
 ├── .htaccess        # Laravel のリライト設定
 ├── css/             # 公開静的ファイル（必要に応じて配置）
 ├── js/
 ├── images/
-├── storage -> laravel/storage/app/public  # public/storage へのシンボリックリンク想定
-└── laravel/        # アプリ本体（composer.json, artisan, app/ などすべてここに集約）
+└── laravel/         # アプリ本体（composer.json, artisan, app/ などすべてここに集約）
 ```
 
-`composer install` や `php artisan` は、**必ず `public_html/20250714...onamaeweb.jp/laravel/` をカレントディレクトリにして実行**してください。
+`composer install` や `php artisan` は、**`./laravel/` をカレントディレクトリにして実行**してください。
 
 ### PHP / Composer のインストール例（macOS/Homebrew）
 `php` コマンドが見つからない場合は、以下のように Homebrew で PHP と Composer を入れてください。
@@ -102,10 +102,10 @@ xcode-select -p
   Visual Studio Code とは無関係で、VS Code を使っていても CLI 開発ツールは別途インストール・更新する必要があります。
 
 ## セットアップ
-以下は `public_html/20250714...onamaeweb.jp/laravel/` に移動した状態で実行することを想定しています。
+以下は `./laravel/` に移動した状態で実行することを想定しています。
 
 ```bash
-cd public_html/20250714...onamaeweb.jp/laravel/
+cd laravel/
 ```
 
 1. `.env` を作成
@@ -117,7 +117,7 @@ cp .env.example .env
 composer install
 ```
    - `database/factories` は Composer のクラスマップ対象なので、空でも削除しないでください。
-   - `vendor/autoload.php` が見つからないエラーが出る場合は、**必ず `public_html/20250714...onamaeweb.jp/laravel/`（`composer.json` と同じ場所）で**
+    - `vendor/autoload.php` が見つからないエラーが出る場合は、**必ず `./laravel/`（`composer.json` と同じ場所）で**
      `composer install` を実行してください。以前のインストールに失敗していた場合は、`rm -rf vendor composer.lock` で削除してから
      再実行するとクリーンな状態になります。
 3. アプリキー生成
@@ -139,7 +139,7 @@ php artisan serve
 ```
 
 ## お名前.com 共用サーバーへの配置
-- このリポジトリは、DocumentRoot を `public_html/20250714...onamaeweb.jp/` とした場合にそのまま動かせる配置例になっています。`index.php` と `.htaccess` は DocumentRoot 直下、アプリ本体は同階層の `laravel/` 以下にまとめてください。
+- このリポジトリは、DocumentRoot をリポジトリ直下に設定した場合にそのまま動かせる配置例になっています。`index.php` と `.htaccess` は DocumentRoot 直下、アプリ本体は同階層の `laravel/` 以下にまとめてください。
 - アプリ本体を別パスに移したい場合は、DocumentRoot 側の `index.php` で `LARAVEL_BASE_PATH` 環境変数を指定するか、パスを書き換えてください（例: `.htaccess` に `SetEnv LARAVEL_BASE_PATH /home/ユーザー名/laravel-app`）。
 - `storage` ディレクトリ（`laravel/storage` および DocumentRoot 直下の `storage` シンボリックリンク先）には書き込み権限を付与してください。
 - **`index.php` だけを置いても動作しません。** `app/` や `bootstrap/`、`config/`、`vendor/` などのアプリ本体は `laravel/` 側にそろえ、`composer install` 後の `vendor` ディレクトリも必須です。
@@ -148,7 +148,7 @@ php artisan serve
 お名前.com 共用サーバーの DocumentRoot（例: `/public_html/xxxxx/`）直下に `index.php` が無いと 403 になります。最低限、以下をそろえてください。
 
 1. **DocumentRoot 直下にフロントコントローラを置く**
-   - このリポジトリでは `public_html/20250714...onamaeweb.jp/index.php` と `.htaccess` が DocumentRoot 用です。別ドメイン名でも中身は同じなので、配置先フォルダ名だけ合わせれば動きます。
+   - このリポジトリではリポジトリ直下の `index.php` と `.htaccess` が DocumentRoot 用です。別ドメイン名でも中身は同じなので、配置先フォルダ名だけ合わせれば動きます。
 2. **アプリ本体（`app/` や `vendor/` など）を `laravel/` にまとめる**
    - DocumentRoot と同階層、またはさらに外側に `laravel/` ディレクトリを用意し、ここで `composer install` を実行して `vendor` を生成します。
 3. **DocumentRoot 側の `index.php` からアプリに到達できるようパスを合わせる**
