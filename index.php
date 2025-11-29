@@ -12,9 +12,19 @@ define('LARAVEL_START', microtime(true));
 $basePath = getenv('LARAVEL_BASE_PATH') ?: __DIR__.'/laravel';
 $basePath = rtrim($basePath, '/');
 
-require $basePath.'/vendor/autoload.php';
+// Resolve to an absolute path to avoid inconsistencies when the front controller
+// is executed via symlinks or custom document roots.
+$resolvedBasePath = realpath($basePath);
 
-$app = require_once $basePath.'/bootstrap/app.php';
+if ($resolvedBasePath === false) {
+    http_response_code(500);
+    echo 'Laravel base path not found: '.htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8');
+    exit(1);
+}
+
+require $resolvedBasePath.'/vendor/autoload.php';
+
+$app = require_once $resolvedBasePath.'/bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);
 
